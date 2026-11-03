@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#090b0c" />
+    <meta name="description" content="أطلس البث السعودي — شاهد واستكشف القنوات العربية." />
+    <title>Ahmmed | أطلس البث</title>
+    <link rel="icon" href="/app-mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js" defer></script>
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="browse-panel" aria-label="قائمة القنوات">
+        <header class="brandbar">
+          <div class="brand-mark" aria-hidden="true"><span>◉</span><i></i></div>
+          <div class="brand-copy">
+            <h1>Ahmmed</h1>
+            <p>أطلس البث <span class="brand-divider">/</span> قنوات السعودية</p>
+          </div>
+          <button id="uploadButton" class="icon-button upload-top" type="button" title="استيراد قائمة M3U" aria-label="استيراد قائمة M3U">⇧</button>
+          <input id="playlistFile" type="file" accept=".m3u,.m3u8,.txt,audio/x-mpegurl,application/vnd.apple.mpegurl" hidden />
+        </header>
+
+        <div class="hint-strip">
+          <span><b>↑↓</b> تنقّل</span><span><b>Enter</b> تشغيل</span><span><b>F</b> ملء الشاشة</span>
+          <span class="hint-muted">اختر قناة من القائمة للبدء</span>
+        </div>
+
+        <div class="filter-toolbar" aria-label="مرشحات القنوات">
+          <button class="filter-card active" id="countryFilter" type="button"><span class="filter-icon">◎</span><span>السعودية</span></button>
+          <button class="filter-card" id="typeFilter" type="button" aria-pressed="false"><span class="filter-icon">▣</span><span id="typeLabel">الكل</span><span class="tiny-chevron">⌄</span></button>
+          <button class="filter-card" id="categoryFilter" type="button" aria-expanded="false"><span class="filter-icon">◆</span><span id="categoryLabel">التصنيفات</span><span class="tiny-chevron">⌄</span></button>
+        </div>
+
+        <div id="typeMenu" class="dropdown-menu" hidden>
+          <button type="button" data-type="all">كل القنوات</button>
+          <button type="button" data-type="tv">قنوات التلفزيون</button>
+          <button type="button" data-type="radio">الإذاعات</button>
+        </div>
+        <div id="categoryMenu" class="category-menu" hidden aria-label="اختيار التصنيف"></div>
+
+        <div class="list-heading">
+          <div><h2>القنوات</h2><span id="channelCount" class="count-badge">—</span></div>
+          <label class="search-box">
+            <span aria-hidden="true">⌕</span>
+            <input id="searchInput" type="search" placeholder="ابحث عن قناة" autocomplete="off" aria-label="ابحث عن قناة" />
+            <kbd>/</kbd>
+          </label>
+        </div>
+        <div id="listState" class="list-state" role="status">جارٍ تحميل القنوات…</div>
+        <div id="channelList" class="channel-list" role="listbox" aria-label="قنوات السعودية"></div>
+        <footer class="browse-footer">
+          <span class="status-dot"></span><span id="listStatus">القائمة جاهزة</span>
+          <button id="reloadButton" class="text-button" type="button" title="إعادة تحميل القائمة">تحديث القائمة ↻</button>
+        </footer>
+      </aside>
+
+      <main class="watch-panel">
+        <div class="player-topline">
+          <div class="on-air"><span class="live-pip"></span><span id="liveLabel">اختر قناة للمشاهدة</span></div>
+          <button id="playerMenuButton" class="player-menu-button" type="button" title="إظهار تفاصيل القناة">⋯</button>
+        </div>
+        <section id="playerStage" class="player-stage" aria-label="مشغل الفيديو">
+          <video id="videoPlayer" playsinline preload="none" aria-label="بث القناة"></video>
+          <div id="playerEmpty" class="player-empty">
+            <div class="empty-orbit"><div class="empty-play">▶</div></div>
+            <strong>شاشتك على موعد</strong>
+            <span>اختر قناة من القائمة لبدء المشاهدة</span>
+            <button id="startBrowseButton" class="browse-cta" type="button">استكشف القنوات <span>←</span></button>
+          </div>
+          <div id="playerMessage" class="player-message" role="status" hidden></div>
+          <div class="stage-vignette"></div>
+          <div class="stage-controls">
+            <div class="stage-channel"><span class="stage-logo" id="stageLogo">بث</span><span><b id="stageName">لا توجد قناة محددة</b><small id="stageCategory">قنوات السعودية</small></span></div>
+            <div class="control-group">
+              <button id="previousButton" class="control-button" type="button" title="القناة السابقة" aria-label="القناة السابقة">⏮</button>
+              <button id="playButton" class="control-button play-control" type="button" title="تشغيل البث" aria-label="تشغيل البث">▶</button>
+              <button id="nextButton" class="control-button" type="button" title="القناة التالية" aria-label="القناة التالية">⏭</button>
+              <span class="control-separator"></span>
+              <button id="muteButton" class="control-button" type="button" title="كتم الصوت" aria-label="كتم الصوت">◖))</button>
+              <button id="fullscreenButton" class="control-button" type="button" title="ملء الشاشة" aria-label="ملء الشاشة">⛶</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="channel-detail" aria-live="polite">
+          <div id="detailLogo" class="detail-logo"><span>بث</span></div>
+          <div class="detail-copy">
+            <div class="detail-title-row"><h2 id="detailName">أطلس البث</h2><span id="qualityPill" class="quality-pill">قنوات عربية</span></div>
+            <p id="detailMeta">قنوات السعودية <span>•</span> اختر قناة لعرض التفاصيل</p>
+            <p id="detailStatus" class="detail-status">البث المباشر يظهر هنا بعد اختيار القناة</p>
+          </div>
+          <div class="detail-actions">
+            <button id="detailPlayButton" class="primary-button" type="button"><span>▶</span> تشغيل القناة</button>
+            <button id="copyLinkButton" class="secondary-button" type="button" title="نسخ رابط البث">نسخ الرابط</button>
+          </div>
+        </section>
+        <div class="watch-bottom"><span>AHMMED <i>•</i> أطلس البث</span><span>قد يعتمد توفر القناة على منطقتك واتصالك بالإنترنت</span></div>
+      </main>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
